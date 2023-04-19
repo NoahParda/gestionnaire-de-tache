@@ -3,13 +3,15 @@
   <head>
     <title>Gestionnaire de tâches</title>
   </head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <meta charset="utf-8">
   <body>
     <h1>Gestionnaire de tâches</h1>
     
     <!-- Formulaire pour ajouter une nouvelle tâche -->
     <form>
       <label for="task">Nouvelle tâche :</label>
-      <input type="text" id="task" name="task">
+      <input type="text" id="tache" name="tache">
       <br>
       <label for="deadline">Date de fin :</label>
       <input type="date" id="deadline" name="deadline">
@@ -20,6 +22,9 @@
       <input type="text" id="taskdel" name="taskdel">
       <button id="sup" type="button" onclick="delTask()">Supprimer</button>
     </form>
+    <div>
+      <p id="repo"></p>
+    </div>
     
     <!-- Liste des tâches ajoutées -->
     <ul id="taskList"></ul>
@@ -30,7 +35,7 @@
       
       // Fonction pour ajouter une tâche
       function addTask() {
-        let taskInput = document.getElementById("task");
+        let taskInput = document.getElementById("tache");
         let deadlineInput = document.getElementById("deadline");
         
         // Vérifier si les champs sont remplis
@@ -44,8 +49,9 @@
           name: taskInput.value,
           deadline: new Date(deadlineInput.value)
         };
+        ajoutbdd(task);
         tasks.push(task);
-        //ajoutbdd(task);
+        
         
         // Réinitialiser les champs du formulaire
         taskInput.value = "";
@@ -103,27 +109,41 @@
         }
       }
 
+      function response(){
+        $.ajax({
+          url: 'ajout.php',
+          type: 'POST',
+          dataType: 'JSON',
+          success: function(response){
+              console.log(response)
+            }
+          }
+        );
+      }
 
       function ajoutbdd(task){
-            var formData = {
-              nom: $(task.name).val(),
-              date: $(task.deadline.toLocaleDateString()).val(),
-            };
-
-            console.log(formData);
-
-            $.ajax({
-              type: "POST",
-              url: "ajout.php",
-              data: formData,
-              dataType: "json",
-              encode: true,
-            }).done(function (data) {
-              console.log(data);
-            });
-
-            event.preventDefault();
+          var formData = {
+            nom: task.name,
+            deadline: task.deadline.toLocaleDateString(),
           };
+
+          console.log(formData);
+
+          $.ajax({
+            type: "POST",
+            url: "ajout.php",
+            data: formData,
+            dataType: "json",
+            encode: true,
+          }).done(function (data) {
+            console.log(data);
+            response();
+          });
+       
+        event.preventDefault();
+      };
+      
+        
 
     </script>
   </body>

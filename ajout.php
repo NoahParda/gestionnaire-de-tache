@@ -1,4 +1,6 @@
 <?php
+
+header("Access-Control-Allow-Origin: *");
 $errors = [];
 $data = [];
 
@@ -6,8 +8,8 @@ if (empty($_POST['nom'])) {
     $errors['nom'] = 'Le nom de la tache est nécessaire.';
 }
 
-if (empty($_POST['date'])) {
-    $errors['date'] = 'la date est nécessaire.';
+if (empty($_POST['deadline'])) {
+    $errors['deadline'] = 'la date est nécessaire.';
 }
 
 
@@ -31,14 +33,16 @@ catch(PDOException $e){
     die;
 }
 
-function addtask($id,$budget,$itineraire,$date_livraison){
+function addtask($nom, $deadline){
     global $mysqlClient;
-    $sqlQuery1 = "INSERT INTO tache (nom, dates) VALUES ('$nom', convert(varchar, '$date',3))";
+    $sqlQuery1 = "INSERT INTO tache (nom, dates) VALUES ('$nom','$deadline')";
     $recipesStatement = $mysqlClient->prepare($sqlQuery1);
     $recipesStatement->execute();
   }
 
 $nom=$_POST['nom'];
-$date=$_POST['date'];
-addtask($nom, $date);
+$deadline=$_POST['deadline'];
+$date = date_create_from_format('d/m/Y', $deadline);
+$date_sql = $date->format('Y-m-d');
+addtask($nom, $date_sql);
 ?>
